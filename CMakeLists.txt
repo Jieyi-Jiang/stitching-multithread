@@ -13,7 +13,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set(PROJECT video_stitching)
 project( ${PROJECT} )
-set(CMAKE_CXX_STANDARD 17) 
 
 ############################add OpenCV ############################
 # Adjust the path to your OpenCV installation
@@ -37,4 +36,14 @@ target_link_libraries( ${PROJECT} ${OpenCV_LIBS} )
 # Copy the target executable at the right location.
 add_custom_command(TARGET ${PROJECT} POST_BUILD COMMAND ${CMAKE_COMMAND} -E
   copy ${CMAKE_BINARY_DIR}/${PROJECT} ${CMAKE_SOURCE_DIR}
+)
+
+
+
+########################## stitching_demo #########################
+project(stitching_demo)
+add_executable(stitching_demo ./test/stitching_demo.cpp)
+target_link_libraries( stitching_demo ${OpenCV_LIBS} )
+add_custom_command(TARGET stitching_demo POST_BUILD COMMAND ${CMAKE_COMMAND} -E
+  copy ${CMAKE_BINARY_DIR}/stitching_demo ${CMAKE_SOURCE_DIR}
 )

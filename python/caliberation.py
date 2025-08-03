@@ -20,9 +20,25 @@
 
 import numpy as np
 import cv2
-import threading
-import time
 import Camera 
+import time
+import signal
+
+# 全局退出标志，用于优雅退出
+exit_flag = False
+
+def handle_signal(signum, camera_list):
+    """处理信号，设置全局退出标志"""
+    global exit_flag
+    print(f"\n接收到信号 {signum}，正在准备退出...")
+    exit_flag = True
+    # for camera in camera_list:
+    #     camera.exit()
+    # cv2.destroyAllWindows()
+
+# 注册信号处理器
+signal.signal(signal.SIGINT, handle_signal)  # Ctrl+C
+signal.signal(signal.SIGTERM, handle_signal) # 终止信号
 
 def display_frames(camera_list):
     """在主线程中显示帧"""
@@ -39,7 +55,7 @@ def display_frames(camera_list):
         
         # 统一的键盘检测
         key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):  # 按'q'退出所有摄像头
+        if key == ord('q') or exit_flag:  # 按'q'退出所有摄像头
             running = False
             break
     
@@ -47,28 +63,8 @@ def display_frames(camera_list):
     for camera in camera_list:
         camera.stop()
     cv2.destroyAllWindows()
-        
-    
-    cv2.destroyAllWindows()
-'''
-(1) read the video frame
-(2) show the frame in the window realtime
-(3) press 'y' to send the frame to get the object point 
-    (3.1) if the corners is found corectly -> go to (4)
-    (3.2) if connot find the corners that needed -> go back to (1) and show status 
-(4) process corners to sub-pixel pricision 
-(5) show the corners in window 
-(6) append the vaild conrners and write it to file
-    (6.1) if valid frame < required number -> go back to (1)
-    (6.2) if valid frame > requried number -> go to (7)
-(7) calculate the pramaters
-    (7.1) to calculate the internal pramaters of camera, requires more than 3 valid frame
-    (7.2) calculate 
-(8) show the caliberation result 
-(9) calculte the reprojection error
-(10) write the result to file
-(11) show the frame clibrated in another window
-''' 
+
+
 def caliberation(camera, num=15, corner_size=(12,7), sque_size=21):
     
     # windows 
@@ -129,7 +125,7 @@ def caliberation(camera, num=15, corner_size=(12,7), sque_size=21):
                 cv2.waitKey(2000)
                 print(f"放弃当前帧")
         
-        elif key == ord('q'):
+        elif key == ord('q') or exit_flag:
             camera.stop()
             cv2.destroyAllWindows()
             break
@@ -168,13 +164,15 @@ def caliberated_frame(camera, mtx, dist):
         frame_cp = frame.copy()
         newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
         undistorted = cv2.undistort(frame_cp, mtx, dist, None, newcameramtx)
+        x, y, w, h = roi
+        undistorted_roi = undistorted[y:y+h, x:x+w].copy()
         if frame is not None:
-            cv2.imshow(window_name_1, undistorted)
+            cv2.imshow(window_name_1, undistorted_roi)
             cv2.imshow(window_name_2, frame)
         
         # 添加键盘检测
         key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):  # 按'q'退出
+        if key == ord('q') or exit_flag:  # 按'q'退出
             camera.stop()
             cv2.destroyAllWindows()
             break
@@ -190,19 +188,19 @@ if __name__ == '__main__':
         cameras = [camera1, camera2, camera3]
         
         # 在主线程中显示帧
-        # display_frames(cameras)
+        display_frames(cameras)
         print("display_frames 结束")
-        # caliberation(camera1)
+        # caliberation(camera1, 5, (11, 8), 20)
         print("caliberation 结束")
         
-        # mtx_1 = np.array([[743.97677735,   0.        , 935.75657458],
-        #                   [  0.        , 741.26408976, 551.60094992],
-        #                   [  0.        ,   0.        ,   1.        ]])
-        # dist_1 = np.array([[-0.00628729, -0.03344213, -0.00081306,  0.00060377,  0.00957155]])
-        mtx_1 = np.array([[614.75909275,   0.         ,898.06469883],
-                          [  0.        , 609.51992427 ,564.02661058],
-                          [  0.        ,   0.         ,  1.        ]])
-        dist_1 = np.array([[-6.40763539e-03, -7.75676144e-03, -1.15272080e-03, -6.12025739e-05, 1.59816101e-03]])
+        mtx_1 = np.array([[743.97677735,   0.        , 935.75657458],
+                          [  0.        , 741.26408976, 551.60094992],
+                          [  0.        ,   0.        ,   1.        ]])
+        dist_1 = np.array([[-0.00628729, -0.03344213, -0.00081306,  0.00060377,  0.00957155]])
+        # mtx_1 = np.array([[614.75909275,   0.         ,898.06469883],
+        #                   [  0.        , 609.51992427 ,564.02661058],
+        #                   [  0.        ,   0.         ,  1.        ]])
+        # dist_1 = np.array([[-6.40763539e-03, -7.75676144e-03, -1.15272080e-03, -6.12025739e-05, 1.59816101e-03]])
         
         mtx_2 = np.array([[7.38542784e+02, 0.00000000e+00, 1.00261851e+03],
                           [0.00000000e+00, 7.35634401e+02, 6.05736231e+02],
@@ -214,7 +212,7 @@ if __name__ == '__main__':
                             [  0.         ,   0.        ,   1.        ]])
         dist_3 = np.array([[-0.01658264, -0.0261744,  -0.00037458,  0.00018215,  0.00740635]])
     
-        caliberated_frame(camera1, mtx_1, dist_1)
+        # caliberated_frame(camera1, mtx_1, dist_1)
         # caliberated_frame(camera2, mtx_2, dist_2)
         # caliberated_frame(camera3, mtx_3, dist_3)
     

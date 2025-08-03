@@ -79,6 +79,7 @@ class Camera:
             if self.frame is not None:
                 return self.frame.copy()  # 返回副本以避免数据竞争
             return None
+        self.frame_ready.clear()  # 清除帧可用标志
     
     def get_frame_count(self):
         """获取帧计数"""
