@@ -16,7 +16,7 @@ namespace stitching {
         {
             _fourcc = VideoWriter::fourcc(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
         }
-        _cap = VideoCapture(_path);
+        _cap = VideoCapture(_path, cv::CAP_V4L2);
         _cap.set(CAP_PROP_FRAME_WIDTH, _width);
         _cap.set(CAP_PROP_FRAME_HEIGHT, _height);
         _cap.set(CAP_PROP_FPS, _fps);
@@ -93,9 +93,9 @@ namespace stitching {
                 bool ret = _cap.read(temp_frame);
                 if (!ret || temp_frame.empty())
                 {
-                    // std::cout << "Camera: " + _name + " read frame failed" << std::endl;
-                    throw runtime_error("Camera: " + _name + " read frame failed");
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1)); // 避免空转
+                    // throw runtime_error("Camera: " + _name + " read frame failed");
+                    std::cout << "Camera: " + _name + " read frame failed" << std::endl;
+                    this_thread::sleep_for(chrono::milliseconds(1)); // 避免空转
                     continue;
                 }
                 {
@@ -105,12 +105,12 @@ namespace stitching {
                     _frame_ready_flag = true;
                 }
                 _frame_counter++;
-                std::cout << "Camera: " + _name + " read frame " << _frame_counter << std::endl;
+                // std::cout << "Camera: " + _name + " read frame " << _frame_counter << std::endl;
                 // 通知等待帧的线程
                 _cv_frame_ready.notify_one();
 
                 // 如果需要控制帧率，可以这里加延时，例如 40ms 对应 25fps
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                this_thread::sleep_for(std::chrono::milliseconds(1));
             }
             catch(const std::exception& e)
             {

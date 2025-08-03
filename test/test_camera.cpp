@@ -1,82 +1,94 @@
 #include <iostream>
-
-#include <thread>
-#include <csignal>
-#include <atomic>
-
+#include <filesystem>
+#include <vector>
 #include <opencv2/opencv.hpp>
 
-#include "camera.hpp"
-
 using namespace std;
-using namespace cv;
-using namespace stitching;
+namespace fs = std::filesystem;
 
-atomic<bool> exit_flag(false);
-
-
-void handle_signal(int signum)
+string fourccToString(int fourcc)
 {
-    cout << "receive the siganal: " << signum << endl;
-    exit_flag = true;
+    char fourcc_str[5] = {0};
+    fourcc_str[0] = fourcc & 0xFF;
+    fourcc_str[1] = (fourcc >> 8) & 0xFF;
+    fourcc_str[2] = (fourcc >> 16) & 0xFF;
+    fourcc_str[3] = (fourcc >> 24) & 0xFF;
+    return string(fourcc_str);
 }
 
-void setup_signal_handler()
-{
-    signal(SIGINT, handle_signal);
-    signal(SIGTERM, handle_signal);
-}
 
-void display_frames(vector<Camera*>& camera_list)
-{
-        // 在主线程中显示帧
-    for (auto* camera : camera_list) {
-        cv::namedWindow(camera->get_name(), cv::WINDOW_NORMAL);
-        cv::resizeWindow(camera->get_name(), 800, 600);
-    }
-    
-    bool running = true;
-    while (running) {
-        for (auto* camera : camera_list) {
-            cv::Mat frame = camera->get_frame();
-            if (!frame.empty()) {
-                cv::imshow(camera->get_name(), frame);
-            }
-        }
-        
-        // 统一的键盘检测
-        int key = cv::waitKey(1) & 0xFF;
-        if (key == 'q' || exit_flag.load()) {  // 按'q'退出所有摄像头
-            running = false;
-            break;
-        }
-    }
-    
-    // 停止所有摄像头并销毁窗口
-    for (auto* camera : camera_list) {
-        camera->stop();
-    }
-    cv::destroyAllWindows();
-}
 
-int main(int argc, char* argv[])
+int main()
 {
-    setup_signal_handler();
-    Camera camera1("camera1", "/dev/video0", 1920, 1080, 25, "MJPG");
-    Camera camera2("camera2", "/dev/video2", 1920, 1080, 25, "MJPG");
-    Camera camera3("camera3", "/dev/video4", 1920, 1080, 25, "MJPG");
-    camera1.start();
-    camera2.start();
-    camera3.start();
-    vector<Camera*> camera_list({&camera1, &camera2, &camera3});
-    cout << "start display frames" << endl;
-    display_frames(camera_list);
-    cout << "stop display frames" << endl;
-    while (exit_flag == false)
+    vector<string> video_devices;
+    // 枚举 /dev/video* 设备
+    for (const auto &entry : fs::directory_iterator("/dev"))
     {
+        string path = entry.path();
+        if (path.find("/dev/video") != string::npos)
+        {
+            video_devices.push_back(path);
+        }
+    }
 
+    cout << "检测到的视频设备：" << endl;
+    for (auto &dev : video_devices)
+    {
+        cout << " - " << dev << endl;
+    }
+
+    cout << "\n开始检测每个摄像头的格式和推荐配置...\n" << endl;
+
+    for (auto &dev : video_devices)
+    {
+        cv::VideoCapture cap(dev, cv::CAP_V4L2);  // 强制使用 V4L2
+        if (!cap.isOpened())
+        {
+            cout << dev << " 打不开，可能被占用或不支持" << endl;
+            continue;
+        }
+
+        cout << "===== 设备: " << dev << " =====" << endl;
+
+        // 读取当前参数
+        int width = (int)cap.get(cv::CAP_PROP_FRAME_WIDTH);
+        int height = (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+        double fps = cap.get(cv::CAP_PROP_FPS);
+        int fourcc = (int)cap.get(cv::CAP_PROP_FOURCC);
+
+        cout << "当前默认分辨率: " << width << "x" << height << endl;
+        cout << "当前默认FPS: " << fps << endl;
+        cout << "当前FourCC: " << fourccToString(fourcc) << endl;
+
+        // 尝试切换到 MJPG 并降低分辨率
+        bool set_ok = cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','J','P','G'));
+        cap.set(cv::CAP_PROP_FRAME_WIDTH, 1920);
+        cap.set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
+        cap.set(cv::CAP_PROP_FPS, 25);
+
+        int new_width = (int)cap.get(cv::CAP_PROP_FRAME_WIDTH);
+        int new_height = (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+        double new_fps = cap.get(cv::CAP_PROP_FPS);
+        int new_fourcc = (int)cap.get(cv::CAP_PROP_FOURCC);
+
+        cout << "尝试设置 MJPG 1920x1080@30fps ..." << endl;
+        cout << "实际生效参数: " << new_width << "x" << new_height
+             << " @" << new_fps
+             << " FourCC=" << fourccToString(new_fourcc) << endl;
+
+        cv::Mat frame;
+        if (cap.read(frame) && !frame.empty())
+        {
+            cout << "✅ 读取一帧成功，摄像头可用" << endl;
+        }
+        else
+        {
+            cout << "❌ 读取帧失败" << endl;
+        }
+
+        cap.release();
+        cout << endl;
     }
 
     return 0;
 }
-

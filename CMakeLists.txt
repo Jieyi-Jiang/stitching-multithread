@@ -47,3 +47,11 @@ target_link_libraries( stitching_demo ${OpenCV_LIBS} )
 add_custom_command(TARGET stitching_demo POST_BUILD COMMAND ${CMAKE_COMMAND} -E
   copy ${CMAKE_BINARY_DIR}/stitching_demo ${CMAKE_SOURCE_DIR}
 )
+
+########################## test_camera #########################
+project(test_camera)
+add_executable(test_camera ./test/test_camera.cpp)
+target_link_libraries( test_camera ${OpenCV_LIBS} )
+add_custom_command(TARGET test_camera POST_BUILD COMMAND ${CMAKE_COMMAND} -E
+  copy ${CMAKE_BINARY_DIR}/test_camera ${CMAKE_SOURCE_DIR}
+)
