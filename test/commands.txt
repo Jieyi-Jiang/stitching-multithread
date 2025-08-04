@@ -1,0 +1,17 @@
+work dictionary : ../excutable
+
+./stitching_demo \ 
+    ../data/group6/img1.png \
+    ../data/group6/img2.png \
+    ../data/group6/img3.png \
+    --output ../output/group6-test.jpg \
+    --matcher homography \
+    --warp spherical  \
+    --seam no
+
+
+./stitching \
+    ../data/group3/img1.png \
+    ../data/group3/img2.png \
+    ../data/group3/img3.png \
+    --output ../output/group3-test.jpg

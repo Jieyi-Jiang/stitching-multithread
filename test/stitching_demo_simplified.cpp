@@ -389,13 +389,8 @@ static int parseCmdArgs(int argc, char** argv)
 
 int main(int argc, char* argv[])
 {
-#if ENABLE_LOG
     int64 app_start_time = getTickCount();
-#endif
 
-#if 0
-    cv::setBreakOnError(true);
-#endif
 
     int retval = parseCmdArgs(argc, argv);
     if (retval)
@@ -413,34 +408,10 @@ int main(int argc, char* argv[])
     bool is_work_scale_set = false, is_seam_scale_set = false, is_compose_scale_set = false;
 
     LOGLN("Finding features...");
-#if ENABLE_LOG
     int64 t = getTickCount();
-#endif
 
     Ptr<Feature2D> finder;
-    if (features_type == "orb")
-    {
-        finder = ORB::create();
-    }
-    else if (features_type == "akaze")
-    {
-        finder = AKAZE::create();
-    }
-#ifdef HAVE_OPENCV_XFEATURES2D
-    else if (features_type == "surf")
-    {
-        finder = xfeatures2d::SURF::create();
-    }
-#endif
-    else if (features_type == "sift")
-    {
-        finder = SIFT::create();
-    }
-    else
-    {
-        cout << "Unknown 2D features type: '" << features_type << "'.\n";
-        return -1;
-    }
+    finder = SIFT::create();
 
     Mat full_img, img;
     vector<ImageFeatures> features(num_images);
@@ -494,17 +465,11 @@ int main(int argc, char* argv[])
     LOGLN("Finding features, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
 
     LOG("Pairwise matching");
-#if ENABLE_LOG
     t = getTickCount();
-#endif
     vector<MatchesInfo> pairwise_matches;
     Ptr<FeaturesMatcher> matcher;
-    if (matcher_type == "affine")
-        matcher = makePtr<AffineBestOf2NearestMatcher>(false, try_cuda, match_conf);
-    else if (range_width==-1)
-        matcher = makePtr<BestOf2NearestMatcher>(try_cuda, match_conf);
-    else
-        matcher = makePtr<BestOf2NearestRangeMatcher>(range_width, try_cuda, match_conf);
+
+    matcher = makePtr<AffineBestOf2NearestMatcher>(false, try_cuda, match_conf);
 
     (*matcher)(features, pairwise_matches);
     matcher->collectGarbage();
@@ -548,8 +513,15 @@ int main(int argc, char* argv[])
         estimator = makePtr<AffineBasedEstimator>();
     else
         estimator = makePtr<HomographyBasedEstimator>();
-
-    vector<CameraParams> cameras;
+    
+    // 封装了相机内参和外参
+    // focal 是焦距，aspect是宽高比，ppx和ppy是主点坐标，R是旋转矩阵，t是平移向量
+    // K() 返回相机内参矩阵
+    // K = [focal,      0,                  ppx; 
+    //      0,          focal * aspect,     ppy; 
+    //      0,          0,                  1]
+    // R和t是相机的外参
+    vector<CameraParams> cameras; 
     if (!(*estimator)(features, pairwise_matches, cameras))
     {
         cout << "Homography estimation failed.\n";
@@ -561,7 +533,7 @@ int main(int argc, char* argv[])
         Mat R;
         cameras[i].R.convertTo(R, CV_32F);
         cameras[i].R = R;
-        LOGLN("Initial camera intrinsics #" << indices[i]+1 << ":\nK:\n" << cameras[i].K() << "\nR:\n" << cameras[i].R << "\nt:\n" << cameras[i].t);
+        LOGLN("Initial camera intrinsics #" << indices[i]+1 << ":\nK:\n" << cameras[i].K() << "\nR:\n" << cameras[i].R);
     }
 
     Ptr<detail::BundleAdjusterBase> adjuster;
@@ -589,7 +561,6 @@ int main(int argc, char* argv[])
     }
 
     // Find median focal length
-
     vector<double> focals;
     for (size_t i = 0; i < cameras.size(); ++i)
     {
@@ -753,7 +724,7 @@ int main(int argc, char* argv[])
     else if (seam_find_type == "gc_color")
     {
 #ifdef HAVE_OPENCV_CUDALEGACY
-        if (try_cuda && cuda::getCudaEnabledDeviceCount() > 0)
+        if (try_cuda && cuda::getCudaEnabledDeviceCount() > 0)；‘
             seam_finder = makePtr<detail::GraphCutSeamFinderGpu>(GraphCutSeamFinderBase::COST_COLOR);
         else
 #endif

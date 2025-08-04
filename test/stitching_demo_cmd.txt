@@ -1,1 +1,0 @@
-./stitching_demo ./data/group6/img1.png ./data/group6/img2.png ./data/group6/img3.png --output ./output/group6-test.jpg --warp spherical  --seam no

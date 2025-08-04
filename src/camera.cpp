@@ -59,6 +59,7 @@ namespace stitching {
             cerr << "Camera: " + _name + " has stopped" << endl;
         }
 
+
         _running_flag = false;
         _cv_frame_ready.notify_all();
 
