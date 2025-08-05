@@ -20,6 +20,16 @@ def handle_signal(signum, camera_list):
 signal.signal(signal.SIGINT, handle_signal)  # Ctrl+C
 signal.signal(signal.SIGTERM, handle_signal) # 终止信号
 
+def get_pose(obj_pts, img_pts, K, dist):
+    # 求每一组图像的外参（这里只用第一张示例，可扩展多张求平均/BA优化）
+    rvecs_all, tvecs_all = [], []
+    for obj, img in zip(obj_pts, img_pts):
+        ok, rvec, tvec = cv2.solvePnP(obj, img, K, dist)
+        if ok:
+            rvecs_all.append(rvec)
+            tvecs_all.append(tvec)
+    return rvecs_all, tvecs_all
+
 def joint_calibration(num=15, corner_size=(12,7), square_size=21):
     """联合标定多个摄像头"""
     # 打开摄像头
@@ -63,13 +73,19 @@ def joint_calibration(num=15, corner_size=(12,7), square_size=21):
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     
     # object points 
-    object_points_1 = []
+    # 棋盘格角点，代表角点在棋盘格坐标系下的位置
+    object_points = []
+    # 相机角点代表角点在相机坐标系下的位置
     image_points_1 = []
-    object_points_2 = []
     image_points_2 = []
-    object_points_3 = []
     image_points_3 = []
-
+    R1_list = []
+    R2_list = []
+    R3_list = []
+    t1_list = []
+    t2_list = []
+    t3_list = []
+    
     cnt = 0
     # 获取角点
     while not exit_flag and cnt < num:
@@ -89,7 +105,10 @@ def joint_calibration(num=15, corner_size=(12,7), square_size=21):
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             print("退出标定")
-            break
+            for camera in camera_list:
+                camera.stop()   
+            cv2.destroyAllWindows()
+            return 
         elif key != ord('y'):
             continue
 
@@ -169,12 +188,10 @@ def joint_calibration(num=15, corner_size=(12,7), square_size=21):
             
         key = cv2.waitKey(-1) & 0xFF
         if key == ord('y'):
-            object_points_1.append(object_point)
             image_points_1.append(corners_refined_1)
-            object_points_2.append(object_point)
             image_points_2.append(corners_refined_2)
-            object_points_3.append(object_point)
             image_points_3.append(corners_refined_3)
+            object_points.append(object_point)
             cnt += 1
             print(f"获取 {cnt}/{num} 个有效帧")
         else:
@@ -186,7 +203,45 @@ def joint_calibration(num=15, corner_size=(12,7), square_size=21):
             cv2.imshow(camera3.name, img_display_3)
             cv2.waitKey(2000)
             print(f"放弃当前帧")
-            
+
+    # SolvePnP
+    K1 = mtx_1
+    dist1 = dist_1
+    K2 = mtx_2
+    dist2 = dist_2
+    K3 = mtx_3
+    dist3 = dist_3
+    rvecs1, tvecs1 = get_pose(object_points, image_points_1, K1, dist1)
+    rvecs2, tvecs2 = get_pose(object_points, image_points_2, K2, dist2)
+    rvecs3, tvecs3 = get_pose(object_points, image_points_3, K3, dist3)
+    # === 选用第一帧做示例（可以做平均或BA优化） ===
+    R1, _ = cv2.Rodrigues(rvecs1[0])
+    R2, _ = cv2.Rodrigues(rvecs2[0])
+    R3, _ = cv2.Rodrigues(rvecs3[0])
+    t1, t2, t3 = tvecs1[0], tvecs2[0], tvecs3[0]
+
+    # === 转换到 cam2 坐标系下 ===    
+    R12 = R2.T @ R1
+    t12 = R2.T @ (t1 - t2)
+    
+    R22 = R2.T @ R2
+    t22 = R2.T @ (t2 - t2)
+
+    R32 = R2.T @ R3
+    t32 = R2.T @ (t3 - t2)
+
+    print("Cam1 -> Cam2 外参:")
+    print("R12:\n", R12)
+    print("t12:\n", t12)
+
+    print("Cam2 -> Cam2 外参:")
+    print("R22:\n", R22)
+    print("t22:\n", t22)
+
+    print("Cam3 -> Cam2 外参:")
+    print("R32:\n", R32)
+    print("t32:\n", t32)
+    
     for camera in camera_list:
         camera.stop()
     cv2.destroyAllWindows()
@@ -194,5 +249,5 @@ def joint_calibration(num=15, corner_size=(12,7), square_size=21):
         
 
 if __name__ == '__main__':
-    joint_calibration()
+    joint_calibration(5)
     print("joint_calibration 结束")
