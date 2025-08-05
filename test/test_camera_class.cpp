@@ -46,7 +46,7 @@ void display_frames(const vector<Camera*>& camera_list)
         }
 
         // 统一的键盘检测
-        int key = waitKey(1) & 0xFF;
+        int key = waitKey(10) & 0xFF;
         if (key == 'q' || exit_flag.load()) {  // 按'q'退出所有摄像头
             running = false;
             break;
@@ -70,15 +70,18 @@ int main(int argc, char* argv[])
     camera1.start();
     camera2.start();
     camera3.start();
-    vector<Camera*> camera_list({ &camera1, &camera2, &camera3});
+    // vector<Camera*> camera_list({ &camera1, &camera2, &camera3});
+    // vector<Camera*> camera_list({ &camera1 });
+
     cout << "start display frames" << endl;
-    display_frames(camera_list);
+    // display_frames(camera_list);
     cout << "stop display frames" << endl;
     cv::Mat frame;
     printf("waiting for exit signal...\n");
+    // waitKey(0);
     while (exit_flag == false)
     {
-
+        waitKey(1000);
     }
     cout << "exit signal received, stopping main process..." << endl;
 

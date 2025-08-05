@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-        cv::VideoCapture cap1("/dev/video0", cv::CAP_V4L2);  // 或者 "/dev/video0"
+    cv::VideoCapture cap1("/dev/video0", cv::CAP_V4L2);  // 或者 "/dev/video0"
     if (!cap1.isOpened()) {
         std::cout << "Cannot open camera1!" << std::endl;
         return -1;
@@ -27,9 +27,12 @@ int main()
     // cv::VideoCapture cap2("/dev/video2", cv::CAP_V4L2);
     // cv::VideoCapture cap3("/dev/video4", cv::CAP_V4L2);
 
-    cap1.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
-    cap2.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
-    cap3.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+    // cap1.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+    // cap2.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+    // cap3.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+    cap1.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('Y', 'U', 'Y', 'V'));
+    cap2.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('Y', 'U', 'Y', 'V'));
+    cap3.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('Y', 'U', 'Y', 'V'));
 
     cap1.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
     cap1.set(cv::CAP_PROP_FRAME_HEIGHT, 720);

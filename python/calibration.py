@@ -65,7 +65,7 @@ def display_frames(camera_list):
     cv2.destroyAllWindows()
 
 
-def caliberation(camera, num=15, corner_size=(12,7), sque_size=21):
+def calibration(camera, num=15, corner_size=(12,7), sque_size=21):
     
     # windows 
     window_name = "Caliberation" + camera.name
@@ -151,7 +151,7 @@ def caliberation(camera, num=15, corner_size=(12,7), sque_size=21):
         
             
         
-def caliberated_frame(camera, mtx, dist):
+def calibrated_frame(camera, mtx, dist):
     window_name_1 = "Caliberated: " + camera.name
     window_name_2 = "Original: " + camera.name
     cv2.namedWindow(window_name_1, cv2.WINDOW_NORMAL)
@@ -190,9 +190,9 @@ if __name__ == '__main__':
         # 在主线程中显示帧
         display_frames(cameras)
         print("display_frames 结束")
-        # caliberation(camera1, 5, (11, 8), 20)
-        print("caliberation 结束")
-        
+        # calibration(camera1, 5, (11, 8), 20)
+        print("calibration 结束")
+
         mtx_1 = np.array([[743.97677735,   0.        , 935.75657458],
                           [  0.        , 741.26408976, 551.60094992],
                           [  0.        ,   0.        ,   1.        ]])
@@ -211,11 +211,10 @@ if __name__ == '__main__':
                             [  0.         , 724.56580229, 544.12298866],
                             [  0.         ,   0.        ,   1.        ]])
         dist_3 = np.array([[-0.01658264, -0.0261744,  -0.00037458,  0.00018215,  0.00740635]])
-    
-        # caliberated_frame(camera1, mtx_1, dist_1)
-        # caliberated_frame(camera2, mtx_2, dist_2)
-        # caliberated_frame(camera3, mtx_3, dist_3)
-    
+
+        # calibrated_frame(camera1, mtx_1, dist_1)
+        # calibrated_frame(camera2, mtx_2, dist_2)
+        # calibrated_frame(camera3, mtx_3, dist_3)
 
 
     except Exception as e:

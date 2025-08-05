@@ -96,13 +96,14 @@ namespace stitching {
                 {
                     // throw runtime_error("Camera: " + _name + " read frame failed");
                     std::cout << "Camera: " + _name + " read frame failed" << std::endl;
-                    this_thread::sleep_for(chrono::milliseconds(1)); // 避免空转
+                    // this_thread::sleep_for(chrono::milliseconds(100)); // 避免空转
                     continue;
                 }
                 {
                     // 加锁保护 _frame 资源
                     unique_lock<mutex> lock(_mtx_frame);
-                    temp_frame.copyTo(_frame);
+                    // temp_frame.copyTo(_frame);
+                    _frame = temp_frame;
                     _frame_ready_flag = true;
                 }
                 _frame_counter++;
@@ -111,7 +112,7 @@ namespace stitching {
                 _cv_frame_ready.notify_one();
 
                 // 如果需要控制帧率，可以这里加延时，例如 40ms 对应 25fps
-                this_thread::sleep_for(std::chrono::milliseconds(1));
+                // this_thread::sleep_for(std::chrono::milliseconds(10));
             }
             catch(const std::exception& e)
             {
@@ -125,8 +126,9 @@ namespace stitching {
     Mat Camera::get_frame(void)
     {
         unique_lock<mutex> lock(_mtx_frame);  // 自动加锁，离开作用域自动解锁
-        _cv_frame_ready.wait_for(lock,  chrono::milliseconds(100), [this]{ return  _frame_ready_flag; });
-        Mat ret_frame = _frame.clone();
+        _cv_frame_ready.wait(lock, [this]{ return _frame_ready_flag; }); // 等待帧准备好
+        // Mat ret_frame = _frame.clone();
+        Mat ret_frame = _frame;  // 直接返回引用，避免不必要的复制
         _frame_ready_flag = false;
         return ret_frame;
     }
