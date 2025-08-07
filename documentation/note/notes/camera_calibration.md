@@ -107,12 +107,12 @@ using “QR factorization”
 
 1. as for $Kt$
 
-$t = K^{-1}
+$$ t = K^{-1}
 \begin{bmatrix}
 p_{14} \\
 p_{24} \\
 p_{34}
-\end{bmatrix}$ 
+\end{bmatrix} $$ 
 
 # Other Intrinsic Parameters (Distortion)
 
