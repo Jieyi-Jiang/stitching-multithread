@@ -24,8 +24,11 @@ def get_pose(obj_pts, img_pts, K, dist):
     # 求每一组图像的外参（这里只用第一张示例，可扩展多张求平均/BA优化）
     rvecs_all, tvecs_all = [], []
     for obj, img in zip(obj_pts, img_pts):
-        ok, rvec, tvec = cv2.solvePnP(obj, img, K, dist)
+        ok, rvec, tvec = cv2.solvePnP(obj, img, K, dist) 
         if ok:
+            print("solvePnP success")
+            print("rvec: ", rvec)
+            print("tvec: ", tvec)
             rvecs_all.append(rvec)
             tvecs_all.append(tvec)
     return rvecs_all, tvecs_all
@@ -214,21 +217,35 @@ def joint_calibration(num=15, corner_size=(12,7), square_size=21):
     rvecs1, tvecs1 = get_pose(object_points, image_points_1, K1, dist1)
     rvecs2, tvecs2 = get_pose(object_points, image_points_2, K2, dist2)
     rvecs3, tvecs3 = get_pose(object_points, image_points_3, K3, dist3)
+    R1_list = rvecs1
+    T1_list = tvecs1
+    R2_list = rvecs2
+    T2_list = tvecs2
+    R3_list = rvecs3
+    T3_list = tvecs3
     # === 选用第一帧做示例（可以做平均或BA优化） ===
-    R1, _ = cv2.Rodrigues(rvecs1[0])
-    R2, _ = cv2.Rodrigues(rvecs2[0])
-    R3, _ = cv2.Rodrigues(rvecs3[0])
-    t1, t2, t3 = tvecs1[0], tvecs2[0], tvecs3[0]
+    R1, _ = cv2.Rodrigues(R1_list[0])
+    R2, _ = cv2.Rodrigues(R2_list[0])
+    R3, _ = cv2.Rodrigues(R3_list[0])
+    t1, t2, t3 = T1_list[0], T2_list[0], T3_list[0]
 
     # === 转换到 cam2 坐标系下 ===    
-    R12 = R2.T @ R1
-    t12 = R2.T @ (t1 - t2)
+    # R12 = R2.T @ R1
+    # t12 = R2.T @ (t1 - t2)
     
-    R22 = R2.T @ R2
-    t22 = R2.T @ (t2 - t2)
+    # R22 = R2.T @ R2
+    # t22 = R2.T @ (t2 - t2)
 
-    R32 = R2.T @ R3
-    t32 = R2.T @ (t3 - t2)
+    # R32 = R2.T @ R3
+    # t32 = R2.T @ (t3 - t2)
+    R12 = R2 @ R1.T
+    t12 = t2 - R2 @ R1.T @ t1
+
+    R22 = R2 @ R2.T
+    t22 = t2 - R2 @ R2.T @ t2
+
+    R32 = R2 @ R3.T
+    t32 = t2 - R2 @ R3.T @ t3
 
     print("Cam1 -> Cam2 外参:")
     print("R12:\n", R12)

@@ -18,7 +18,7 @@
 #include "opencv2/stitching/warpers.hpp"
 
 #ifdef HAVE_OPENCV_XFEATURES2D
-#include "opencv2/xfeatures2d.hpp"
+#include "opencv2/xfeatures2d.hpp"          //  特征检测特征识别算法
 #include "opencv2/xfeatures2d/nonfree.hpp"
 #endif
 

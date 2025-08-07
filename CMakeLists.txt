@@ -26,9 +26,11 @@ include_directories(
 include_directories(
     ./include
 )
-file(GLOB C_SOURCES ./src/*.c)
-file(GLOB CPP_SOURCES ./src/*.cpp)
-set(SOURCES ${C_SOURCES} ${CPP_SOURCES})
+file(GLOB C_SOURCES ./source/*.c)
+file(GLOB CPP_SOURCES ./source/*.cpp)
+set(SOURCES ${C_SOURCES} ${CPP_SOURCES}
+        test/MyStitcher.cpp
+        test/MyStitcher.h)
 add_executable( ${PROJECT} ${SOURCES} )
 
 target_link_libraries( ${PROJECT} ${OpenCV_LIBS} )

@@ -33,7 +33,7 @@ function(make_one_executable target source)
 endfunction()
 
 
-make_one_executable(stitching_demo ./stitching_demo.cpp)
+make_one_executable(stitching_demo stitching_demo.hpp)
 
 make_one_executable(check_camera ./check_camera.cpp)
 
