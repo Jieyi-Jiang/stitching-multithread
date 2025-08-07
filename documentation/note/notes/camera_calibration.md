@@ -57,16 +57,21 @@ $s -\text{Skew coefficient, with non-zero if the image axes are not perpendicula
 that is:
 
 $$
-P =\begin{bmatrix}
+P = \begin{bmatrix}
 p_{11} & p_{12} & p_{13} \\
 p_{21} & p_{22} & p_{23} \\
-p_{31} & p_{32} & p_{33}  \\\end{bmatrix}=\begin{bmatrix}
+p_{31} & p_{32} & p_{33}  \\
+\end{bmatrix} 
+= \begin{bmatrix}
 f_x & s   & o_x \\
 0   & f_y & o_y \\ 
-0   & 0   & 1 \end{bmatrix}\begin{bmatrix}
+0   & 0   & 1 
+\end{bmatrix}
+\begin{bmatrix}
 r_{11} & r_{12} & r_{13}  \\
 r_{21} & r_{22} & r_{23}  \\
-r_{31} & r_{32} & r_{33} \end{bmatrix} =KR
+r_{31} & r_{32} & r_{33} 
+\end{bmatrix} =KR
 $$
 
 $$
