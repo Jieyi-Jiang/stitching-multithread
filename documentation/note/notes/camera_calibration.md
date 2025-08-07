@@ -16,8 +16,8 @@ p_{31} & p_{32} & p_{33} & p_{34} \\
 f_x & 0     & o_x   & 0 \\
 0   & f_y   & o_y   & 0 \\
 0   & 0     & 1     & 0
-\end{bmatrix}\
-begin{bmatrix}
+\end{bmatrix}
+\begin{bmatrix}
 r_{11} & r_{12} & r_{13} & t_x \\
 r_{21} & r_{22} & r_{23} & t_y \\
 r_{31} & r_{32} & r_{33} & t_z \\
