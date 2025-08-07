@@ -80,8 +80,7 @@ p_{14} \\
 p_{24} \\
 p_{34}
 \end{bmatrix} 
-=
-\begin{bmatrix}
+= \begin{bmatrix}
 f_x & 0   & o_x  \\
 0   & f_y & o_y  \\
 0   & 0   & 1    
