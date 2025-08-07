@@ -10,8 +10,7 @@ P =
 p_{11} & p_{12} & p_{13} & p_{14} \\
 p_{21} & p_{22} & p_{23} & p_{24} \\
 p_{31} & p_{32} & p_{33} & p_{34} \\
-\end{bmatrix}
-=
+\end{bmatrix} =
 \begin{bmatrix}
 f_x & 0     & o_x   & 0 \\
 0   & f_y   & o_y   & 0 \\
@@ -33,8 +32,7 @@ P =
 p_{11} & p_{12} & p_{13} & p_{14} \\
 p_{21} & p_{22} & p_{23} & p_{24} \\
 p_{31} & p_{32} & p_{33} & p_{34} \\
-\end{bmatrix}
-=
+\end{bmatrix} =
 \begin{bmatrix}
 f_x & s     & o_x & 0 \\
 0   & f_y   & o_y & 0 \\
