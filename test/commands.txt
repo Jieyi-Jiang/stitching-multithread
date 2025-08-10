@@ -3,7 +3,9 @@ work dictionary : ../excutable
 ./stitching_demo ../data/group7/img1.png ../data/group7/img2.png ../data/group7/img3.png \
     --output ../output/group7-test.jpg \
     --matcher homography \
-    --warp spherical  \
+    --ba reproj \ 
+    --warp spherical \
+    --wave_correct no \ 
     --seam no
 
 

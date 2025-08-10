@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 # set the compiler
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -16,24 +16,32 @@ project( ${PROJECT} )
 
 ############################add OpenCV ############################
 # Adjust the path to your OpenCV installation
-set(OpenCV_DIR "/home/jieyi/projects/opencv-lib/install/")
+set(OpenCV_DIR "/home/jieyi/projects/opencv-lib/install/lib/cmake/opencv4")
 find_package( OpenCV REQUIRED )
+message(STATUS "OpenCV_INCLUDE_DIRS = ${OpenCV_INCLUDE_DIRS}")
+message(STATUS "OpenCV_LIBS = ${OpenCV_LIBS}")
 include_directories( 
     ${OpenCV_INCLUDE_DIRS} 
 )
 
+############################ add yaml-cpp ############################
+add_subdirectory(./third-party/yaml-cpp)
+
 ########################## add inc and src ########################
 include_directories(
     ./include
+    ./third-party
 )
 file(GLOB C_SOURCES ./source/*.c)
 file(GLOB CPP_SOURCES ./source/*.cpp)
-set(SOURCES ${C_SOURCES} ${CPP_SOURCES}
-        test/MyStitcher.cpp
-        test/MyStitcher.h)
+set(SOURCES 
+  ${C_SOURCES} 
+  ${CPP_SOURCES}
+)
 add_executable( ${PROJECT} ${SOURCES} )
 
-target_link_libraries( ${PROJECT} ${OpenCV_LIBS} )
+target_link_libraries( ${PROJECT} PRIVATE ${OpenCV_LIBS} )
+target_link_libraries( ${PROJECT} PRIVATE yaml-cpp )
 
 # Copy the target executable at the right location.
 add_custom_command(TARGET ${PROJECT} POST_BUILD COMMAND ${CMAKE_COMMAND} -E

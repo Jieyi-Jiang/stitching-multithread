@@ -447,7 +447,8 @@ int main(int argc, char* argv[])
     vector<Mat> images(num_images);
     vector<Size> full_img_sizes(num_images);
     double seam_work_aspect = 1;
-
+    
+    // extra the feature point 
     for (int i = 0; i < num_images; ++i)
     {
         full_img = imread(samples::findFile(img_names[i]));
@@ -520,6 +521,7 @@ int main(int argc, char* argv[])
     }
 
     // Leave only images we are sure are from the same panorama
+    // This setp can be ignored, because our camera array model is already a panoramic one
     vector<int> indices = leaveBiggestComponent(features, pairwise_matches, conf_thresh);
     vector<Mat> img_subset;
     vector<String> img_names_subset;
@@ -536,6 +538,7 @@ int main(int argc, char* argv[])
     full_img_sizes = full_img_sizes_subset;
 
     // Check if we still have enough images
+    // This setp can also be jumpped 
     num_images = static_cast<int>(img_names.size());
     if (num_images < 2)
     {

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # set the compiler
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -15,10 +15,19 @@ endif()
 
 ############################add OpenCV ############################
 # Adjust the path to your OpenCV installation
-set(OpenCV_DIR "/home/jieyi/projects/opencv-lib/install/")
+set(OpenCV_DIR "/home/jieyi/projects/opencv-lib/install/lib/cmake/opencv4")
 find_package( OpenCV REQUIRED )
 include_directories( 
     ${OpenCV_INCLUDE_DIRS} 
+)
+
+# ############################ add yaml-cpp ############################
+# add_subdirectory(../third-party/yaml-cpp)
+
+############################## include ###############################
+include_directories(
+  ../third-party
+  ./
 )
 
 function(make_one_executable target source)
@@ -33,13 +42,24 @@ function(make_one_executable target source)
 endfunction()
 
 
-make_one_executable(stitching_demo stitching_demo.hpp)
+make_one_executable(stitching_demo stitching_demo.cpp)
 
 make_one_executable(check_camera ./check_camera.cpp)
 
 make_one_executable(stitching ./stitching.cpp)
 
-set(SOURCES ../src/camera.cpp  ./test_camera_class.cpp)
+set(SOURCES ../source/camera.cpp  ./test_camera_class.cpp)
 make_one_executable(test_camera_class "${SOURCES}")
 
 make_one_executable(read_3_camera ./read_3_camera.cpp)
+
+# test yaml-cpp liberary 
+set(target test_yaml)
+add_executable(${target} ./test_yaml.cpp)
+target_link_libraries(${target} PRIVATE yaml-cpp)
+add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_BINARY_DIR}/test/${target} ${CMAKE_SOURCE_DIR}/excutable
+)
+
+

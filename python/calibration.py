@@ -170,6 +170,8 @@ def calibrated_frame(camera, mtx, dist):
             cv2.imshow(window_name_1, undistorted_roi)
             cv2.imshow(window_name_2, frame)
         
+        print(f"calibrated frame size{undistorted_roi.shape}")
+        
         # 添加键盘检测
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q') or exit_flag:  # 按'q'退出
@@ -188,7 +190,7 @@ if __name__ == '__main__':
         cameras = [camera1, camera2, camera3]
         
         # 在主线程中显示帧
-        display_frames(cameras)
+        # display_frames(cameras)
         print("display_frames 结束")
         # calibration(camera1, 5, (11, 8), 20)
         print("calibration 结束")
@@ -214,7 +216,7 @@ if __name__ == '__main__':
 
         # calibrated_frame(camera1, mtx_1, dist_1)
         # calibrated_frame(camera2, mtx_2, dist_2)
-        # calibrated_frame(camera3, mtx_3, dist_3)
+        calibrated_frame(camera3, mtx_3, dist_3)
 
 
     except Exception as e:

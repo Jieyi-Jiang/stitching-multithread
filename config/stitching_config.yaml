@@ -1,0 +1,6 @@
+%YMAL 1.2
+---
+
+camera_num : 3
+intrinsic_yaml_path: "./intrinsic_param.yaml"
+extrinsic_yaml_path: "./extrinsic_param.yaml"

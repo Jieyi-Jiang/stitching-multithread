@@ -813,7 +813,7 @@ int main(int argc, char* argv[])
             is_compose_scale_set = true;
 
             // Compute relative scales
-            //compose_seam_aspect = compose_scale / seam_scale;
+            // compose_seam_aspect = compose_scale / seam_scale;
             compose_work_aspect = compose_scale / work_scale;
 
             // Update warped image scale
