@@ -2,5 +2,8 @@
 ---
 
 camera_num : 3
-intrinsic_yaml_path: "./intrinsic_param.yaml"
-extrinsic_yaml_path: "./extrinsic_param.yaml"
+camera_yaml_path:
+  - "./camera1.yaml"
+  - "./camera2.yaml"
+  - "./camera3.yaml"
+

@@ -4,9 +4,9 @@
 #include <csignal>
 #include <atomic>
 
-#include <opencv2/opencv.hpp>
+#include "opencv2/opencv.hpp"
 
-#include "camera.hpp"
+#include "Camera.hpp"
 
 using namespace std;
 using namespace cv;

@@ -1,4 +1,4 @@
-#include "camera.hpp"
+#include "Camera.hpp"
 
 namespace stitching {
     Camera::Camera(string name, string path, int width, int height, int fps, string fourcc)

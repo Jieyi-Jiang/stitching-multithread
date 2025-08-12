@@ -12,16 +12,16 @@
 #include <string>
 #include <vector>
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/opencv_modules.hpp>
-#include <opencv2/highgui.hpp>
+#include "opencv2/opencv.hpp"
+#include "opencv2/opencv_modules.hpp"
+#include "opencv2/highgui.hpp"
 
-#include <opencv2/core/utility.hpp>
+#include "opencv2/core/utility.hpp"
 
 // ImageFeatures, MatchesInfo, FeaturesMatcher
-#include <opencv2/stitching/detail/matchers.hpp> 
+#include "opencv2/stitching/detail/matchers.hpp" 
 // SphericalWarper
-#include <opencv2/stitching/detail/warpers.hpp>
+#include "opencv2/stitching/detail/warpers.hpp"
 
 #ifdef HAVE_OPENCV_XFEATURES2D // 扩展模块，包含专利保护的部分
 #include "opencv2/xfeatures2d.hpp"
@@ -35,6 +35,9 @@
 using namespace std;
 using namespace cv;
 using namespace cv::detail;
+
+namespace stitching
+{
 
 class MyStitcher
 {
@@ -102,6 +105,6 @@ private:
 };
 
 
-
+}
 
 #endif //MYSTITCHER_H

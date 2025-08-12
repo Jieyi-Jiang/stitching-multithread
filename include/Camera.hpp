@@ -11,7 +11,7 @@
 #include <condition_variable>   // 实现线程间的等待与通知
 
 // opencv header
-#include <opencv2/opencv.hpp>
+#include "opencv2/opencv.hpp"
 #include "opencv2/highgui.hpp"
 
 using namespace std;

@@ -1,0 +1,26 @@
+%YMAL 1.2
+---
+
+name: "camera1"
+path: "/dev/video0"
+image_width: 1920
+image_height: 1080
+pixel_size_um: 3 
+sensor_width_um: 5856
+sensor_height_um: 3276
+lens_focal_mm: 2.1
+FOV: 150
+intrinsics:
+  fx: 743.97
+  fy: 741.26
+  cx: 935.75
+  cy: 551.60
+  skew: 0.0
+  distortion_coeffs: [-0.00628729, -0.03344213, -0.00081306, 0.00060377, 0.00957155]
+extrinsics:
+  rot: [
+    [ 0.83881434, -0.00607487,  0.54438369],
+    [ 0.00979589,  0.99994427, -0.00393547],
+    [-0.54432945,  0.00863385,  0.8388271 ]
+  ]
+  trans: [58.38541299, -10.28852733, -17.30317975]

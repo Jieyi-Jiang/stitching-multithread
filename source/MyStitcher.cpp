@@ -5,6 +5,9 @@
 #include "MyStitcher.hpp"
 #include "yaml-cpp/yaml.h"
 
+namespace stitching
+{
+
 MyStitcher::MyStitcher(const int img_num, const string prama_file)
 {
     num = img_num;
@@ -57,4 +60,6 @@ void MyStitcher::load_images(const vector<Mat> &images)
 void MyStitcher::cal_feature()
 {
     
+}
+
 }

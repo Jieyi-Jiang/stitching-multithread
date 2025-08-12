@@ -48,7 +48,7 @@ make_one_executable(check_camera ./check_camera.cpp)
 
 make_one_executable(stitching ./stitching.cpp)
 
-set(SOURCES ../source/camera.cpp  ./test_camera_class.cpp)
+set(SOURCES ../source/Camera.cpp  ./test_camera_class.cpp)
 make_one_executable(test_camera_class "${SOURCES}")
 
 make_one_executable(read_3_camera ./read_3_camera.cpp)
@@ -62,4 +62,12 @@ add_custom_command(TARGET ${target} POST_BUILD
         ${CMAKE_BINARY_DIR}/test/${target} ${CMAKE_SOURCE_DIR}/excutable
 )
 
-
+set(target test_yaml_param)
+set(SOURCES ../source/CameraParams.cpp  ./test_yaml_param.cpp)
+add_executable(${target} ${SOURCES})
+target_link_libraries(${target} PRIVATE yaml-cpp)
+target_link_libraries(${target} PRIVATE ${OpenCV_LIBS})
+add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_BINARY_DIR}/test/${target} ${CMAKE_SOURCE_DIR}/excutable
+)
