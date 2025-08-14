@@ -1,4 +1,4 @@
-# 项目
+# Notebook 项目笔记
 
 [相机标定 (Camera Calibration)](./notes/camera_calibration.md)
 
