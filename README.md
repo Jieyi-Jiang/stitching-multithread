@@ -1,4 +1,4 @@
 # Stitch the Videos Realtime with Multi-thread
 
-notes main page link: [notes](./documentation/note/notes_main_page.md)
+Notes Home Page Link: [Notes](./documentation/note/notes_main_page.md)
 
